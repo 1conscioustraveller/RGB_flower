@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <title>RGB Geometric Flower – HTML5 Canvas</title>
+  <style>
+    body{
+      margin:0;
+      background:#111;
+      display:flex;
+      height:100vh;
+      align-items:center;
+      justify-content:center;
+    }
+    canvas{
+      border:1px solid #222;
+      background:#000;
+    }
+  </style>
+</head>
+<body>
+<canvas id="flower" width="600" height="600"></canvas>
+
+<script>
+/* ---------- CONFIG ---------- */
+const PETALS       = 12;         // how many petals
+const DOTS_PER_PET = 90;        // dots along one petal
+const DOT_RADIUS   = 2;         // radius of each dot
+const PETAL_WIDTH  = 0.45;      // 0..1 – how wide the petal opens
+const SPEED        = 0.6;       // animation speed (rad per frame)
+
+/* ---------- SETUP ---------- */
+const cvs = document.getElementById('flower');
+const ctx = cvs.getContext('2d');
+const cx  = cvs.width  / 2;
+const cy  = cvs.height / 2;
+
+let angle = 0;
+
+/* ---------- DRAW LOOP ---------- */
+function draw(){
+  ctx.fillStyle = 'rgba(0,0,0,0.08)';   // slight trail
+  ctx.fillRect(0,0,cvs.width,cvs.height);
+
+  for(let p=0; p<PETALS; p++){
+    const petalAngle = (p / PETALS) * 2*Math.PI;
+
+    for(let t=0; t<=DOTS_PER_PET; t++){
+      const fract = t / DOTS_PER_PET;          // 0..1 along petal
+      const r = 150 * fract;                   // distance from center
+      const theta = petalAngle + angle + fract * PETAL_WIDTH * Math.PI;
+
+      const x = cx + r * Math.cos(theta);
+      const y = cy + r * Math.sin(theta);
+
+      /* RGB based on position */
+      const red   = Math.round(255 * fract);
+      const green = Math.round(255 * (1-fract));
+      const blue  = Math.round(255 * Math.sin(angle + petalAngle + fract*Math.PI) * .5 + 127);
+
+      ctx.fillStyle = `rgb(${red},${green},${blue})`;
+      ctx.beginPath();
+      ctx.arc(x,y, DOT_RADIUS, 0, 2*Math.PI);
+      ctx.fill();
+    }
+  }
+
+  angle += SPEED;
+  requestAnimationFrame(draw);
+}
+
+/* ---------- START ---------- */
+draw();
+</script>
+</body>
+</html>
